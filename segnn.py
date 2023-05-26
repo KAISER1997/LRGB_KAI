@@ -86,6 +86,7 @@ class SEGNN(nn.Module):
 
     def catch_isolated_nodes(self, graph):
         """Isolated nodes should also obtain attributes"""
+        return #important CHANGE KAISER /delete this to go back
         if (
             graph.contains_isolated_nodes()
             and graph.edge_index.max().item() + 1 != graph.num_nodes

@@ -49,12 +49,12 @@ class O3Transform:
 #         charges = graph.charges
 
 #         prod_charges = charges[graph.edge_index[0]] * charges[graph.edge_index[1]]
-        rel_pos = pos[graph.edge_index[0]] - pos[graph.edge_index[1]]
+        rel_pos = pos[graph.edge_index[0].long()] - pos[graph.edge_index[1].long()]
 #         edge_dist = torch.sqrt(rel_pos.pow(2).sum(1, keepdims=True))
 
         graph.edge_attr = spherical_harmonics(self.attr_irreps, rel_pos, normalize=True, normalization='integral')
 #         vel_embedding = spherical_harmonics(self.attr_irreps, vel, normalize=True, normalization='integral')
-        dm = scatter(graph.edge_attr, graph.edge_index[1], dim=0, reduce="mean") 
+        dm = scatter(graph.edge_attr, graph.edge_index[1].to(torch.int64), dim=0, reduce="mean") 
         empty=torch.zeros(graph.x.shape[0],16).to(cfg.device)
         empty[0:dm.shape[0],:]=dm
 
@@ -85,7 +85,7 @@ def train_epoch(logger, loader, model, optimizer, scheduler):
         optimizer.zero_grad()
         extra=torch.zeros(batch["x"].shape[0],1)
         batch["x"]=torch.cat([batch["x"],extra],1)
-        print("SIZEEEEEE",batch["x"].shape,batch.num_graphs)
+        # print("SIZEEEEEE",batch["x"].shape,batch.num_graphs)
         batch.to(torch.device(cfg.device))
 
         
